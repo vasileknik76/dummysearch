@@ -194,6 +194,13 @@ func (i *Index) TFIDFGet(docID int) map[int]float64 {
 	return cp
 }
 
+func (i *Index) HasDoc(id int) bool {
+	i.docsMu.RLock()
+	defer i.docsMu.RUnlock()
+	_, ok := i.Docs[id]
+	return ok
+}
+
 func (i *Index) DocsIter(f func(docID int, d *Document)) {
 	i.docsMu.RLock()
 	defer i.docsMu.RUnlock()

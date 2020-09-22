@@ -78,7 +78,13 @@ curl --location --request POST 'http://localhost:6745/lol/batch' \
         "meta": {
             "bar": "baz"
         }
-    }
+    },
+    {
+        "content": "any other, text.",
+        "meta": {
+            "foo": "bar2"
+        }
+    },
 ]'
 ```
 
@@ -91,7 +97,8 @@ Response:
     "Message": "OK",
     "DocumentIds": [
       1,
-      2
+      2,
+      3
     ]
   }
 }
@@ -169,3 +176,19 @@ Response:
 }
 ```
 
+#### Compare two documents:
+
+```shell script
+curl --location --request GET 'http://localhost:6745/lol/compare?doc1=1&doc2=3'
+```
+
+Response:
+
+```json
+{
+  "status": true,
+  "payload": {
+    "score": 0.14907119849998599
+  }
+}
+```
