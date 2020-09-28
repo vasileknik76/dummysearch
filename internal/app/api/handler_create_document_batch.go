@@ -16,6 +16,7 @@ func (s *Server) createDocumentBatchHandler(r *http.Request) response {
 	}
 	i := s.indexes[name]
 	var request []struct {
+		ID      int         `json:"id"`
 		Content string      `json:"content"`
 		Meta    interface{} `json:"meta"`
 	}
@@ -28,9 +29,14 @@ func (s *Server) createDocumentBatchHandler(r *http.Request) response {
 	if err != nil {
 		return errorResponseWithText("Can't parse json", 400)
 	}
+	for _, req := range request {
+		if req.ID <= 0 {
+			return errorResponseWithText("Identifier must be a positive number", 400)
+		}
+	}
 	var ids []int
 	for _, req := range request {
-		id := i.AddDocument(req.Content, req.Meta)
+		id := i.AddDocument(req.ID, req.Content, req.Meta)
 		ids = append(ids, id)
 	}
 

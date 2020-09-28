@@ -16,6 +16,7 @@ func (s *Server) createDocumentHandler(r *http.Request) response {
 	}
 	i := s.indexes[name]
 	var request struct {
+		ID      int         `json:"id"`
 		Content string      `json:"content"`
 		Meta    interface{} `json:"meta"`
 	}
@@ -28,7 +29,10 @@ func (s *Server) createDocumentHandler(r *http.Request) response {
 	if err != nil {
 		return errorResponseWithText("Can't parse json", 400)
 	}
-	id := i.AddDocument(request.Content, request.Meta)
+	if request.ID <= 0 {
+		return errorResponseWithText("Identifier must be a positive number", 400)
+	}
+	id := i.AddDocument(request.ID, request.Content, request.Meta)
 	return successResponse(responseData{
 		Status: true,
 		Payload: struct {

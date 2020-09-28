@@ -8,7 +8,7 @@ import (
 	"github.com/vasileknik76/dummysearch/internal/app/text"
 )
 
-var UpdatePeriod time.Duration = 10 * time.Second
+var DefaultUpdatePeriod time.Duration = 180 * time.Second
 
 type Index struct {
 	cfg       *IndexConfig
@@ -50,12 +50,18 @@ func NewIndex(config *IndexConfig) *Index {
 		IDF:       make(map[int]float64),
 		Freq:      make(map[int]int),
 	}
-	go i.updateWorker()
+	if config.AutoUpdate {
+		go i.updateWorker()
+	}
 	return i
 }
 
 func (i *Index) updateWorker() {
-	t := time.NewTicker(UpdatePeriod)
+	period := DefaultUpdatePeriod
+	if i.cfg.UpdatePeriod.Seconds() != 0 {
+		period = i.cfg.UpdatePeriod
+	}
+	t := time.NewTicker(period)
 	for {
 		select {
 		case <-t.C:
@@ -106,9 +112,12 @@ func (i *Index) TFIDFVal(wordIds []int) map[int]float64 {
 	return tfidf
 }
 
-func (i *Index) AddDocument(text string, meta interface{}) int {
+func (i *Index) AddDocument(id int, text string, meta interface{}) int {
 	tokens, _ := i.Tokenizer.Tokenize(text)
-	docID := i.newDocumentId()
+	docID := id
+	if !i.cfg.CustomIDs {
+		docID = i.newDocumentId()
+	}
 	doc := &Document{len(tokens), make(map[int]float64), 0, meta}
 	wordsComplete := make(map[int]bool)
 	freq := make(map[int]int)

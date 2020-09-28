@@ -1,7 +1,14 @@
 package indexer
 
-import "github.com/vasileknik76/dummysearch/internal/app/text"
+import (
+	"time"
+
+	"github.com/vasileknik76/dummysearch/internal/app/text"
+)
 
 type IndexConfig struct {
-	Language text.Language
+	Language     text.Language
+	CustomIDs    bool
+	UpdatePeriod time.Duration
+	AutoUpdate   bool
 }
