@@ -1,6 +1,7 @@
 package indexer
 
 import (
+	"context"
 	"math"
 	"sync"
 	"time"
@@ -14,6 +15,7 @@ type Index struct {
 	cfg       *IndexConfig
 	T         *Thesaurus
 	Tokenizer text.Tokenizer
+	ctx       context.Context
 
 	docsMu sync.RWMutex
 	Docs   map[int]*Document
@@ -40,7 +42,7 @@ type Document struct {
 	Meta      interface{}
 }
 
-func NewIndex(config *IndexConfig) *Index {
+func NewIndex(ctx context.Context, config *IndexConfig) *Index {
 	i := &Index{
 		cfg:       config,
 		T:         NewThesaurus(),
@@ -49,6 +51,7 @@ func NewIndex(config *IndexConfig) *Index {
 		tFIDF:     make(map[int]map[int]float64),
 		IDF:       make(map[int]float64),
 		Freq:      make(map[int]int),
+		ctx:       ctx,
 	}
 	if config.AutoUpdate {
 		go i.updateWorker()
@@ -64,6 +67,8 @@ func (i *Index) updateWorker() {
 	t := time.NewTicker(period)
 	for {
 		select {
+		case <-i.ctx.Done():
+			return
 		case <-t.C:
 			if i.hasChanges {
 				i.UpdateTFIDF()

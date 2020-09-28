@@ -14,7 +14,7 @@ func (s *Server) createDocumentBatchHandler(r *http.Request) response {
 	if _, ok := s.indexes[name]; !ok {
 		return errorResponseWithText("index not exist", 404)
 	}
-	i := s.indexes[name]
+	i := s.indexes[name].i
 	var request []struct {
 		ID      int         `json:"id"`
 		Content string      `json:"content"`

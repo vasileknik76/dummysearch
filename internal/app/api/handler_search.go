@@ -26,7 +26,7 @@ func (srv *Server) searchHandler(r *http.Request) response {
 	if _, ok := srv.indexes[name]; !ok {
 		return errorResponseWithText("index not exist", 404)
 	}
-	i := srv.indexes[name]
+	i := srv.indexes[name].i
 	query := r.URL.Query().Get("query")
 	if query == "" {
 		return errorResponseWithText("Query is empty", 400)

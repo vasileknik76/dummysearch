@@ -12,7 +12,7 @@ func (s *Server) updateIndexHandler(r *http.Request) response {
 	if _, ok := s.indexes[name]; !ok {
 		return errorResponseWithText("Index not exist", 404)
 	}
-	i := s.indexes[name]
+	i := s.indexes[name].i
 	go i.UpdateTFIDF()
 	return successResponse(responseData{Status: true, Payload: struct{ Message string }{"Index updating"}})
 }

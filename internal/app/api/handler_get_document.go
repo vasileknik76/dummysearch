@@ -17,7 +17,7 @@ func (s *Server) getDocumentHandler(r *http.Request) response {
 	if _, ok := s.indexes[name]; !ok {
 		return errorResponseWithText("index not exist", 404)
 	}
-	i := s.indexes[name]
+	i := s.indexes[name].i
 	doc := i.GetDocument(id)
 	if doc == nil {
 		return errorResponseWithText("Document not found", 404)

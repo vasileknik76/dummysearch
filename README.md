@@ -17,6 +17,7 @@ You can use any language, but engine uses snowball stemmer (https://github.com/k
 - [Build and run](#build-and-run)
 - [Operations](#operations)
     - [Creating new index](#creating-new-index)
+    - [Remove index](#remove-index)
     - [Add document to index](#add-document-to-index)
     - [Bulk add document to index](#bulk-add-document-to-index)
     - [Get document by id](#get-document-by-id)
@@ -51,6 +52,23 @@ $ curl --location --request POST 'http://localhost:6745/' \
 }'
 ```
 Response:
+```json
+{
+  "status": true,
+  "payload": {
+    "Message": "OK"
+  }
+}
+```
+
+#### Remove index:
+
+```shell script
+curl --location --request DELETE 'http://localhost:6745/lol/'
+```
+
+Response:
+
 ```json
 {
   "status": true,

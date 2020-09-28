@@ -15,7 +15,7 @@ func (srv *Server) compareHandler(r *http.Request) response {
 	if _, ok := srv.indexes[name]; !ok {
 		return errorResponseWithText("index not exist", 404)
 	}
-	i := srv.indexes[name]
+	i := srv.indexes[name].i
 	doc1S := r.URL.Query().Get("doc1")
 	if doc1S == "" {
 		return errorResponseWithText("doc1 is empty", 400)

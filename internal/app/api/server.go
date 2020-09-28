@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"net/http"
 	"time"
 
@@ -23,16 +24,24 @@ type Config struct {
 
 type Server struct {
 	*http.Server
-	indexes map[string]*indexer.Index
+	indexes map[string]IndexInfo
+	ctx     context.Context
 }
 
-func NewServer(config Config) *Server {
+type IndexInfo struct {
+	i       *indexer.Index
+	destroy func()
+}
+
+func NewServer(ctx context.Context, config Config) *Server {
 	server := &Server{
-		indexes: make(map[string]*indexer.Index),
+		indexes: make(map[string]IndexInfo),
+		ctx:     ctx,
 	}
 	r := mux.NewRouter()
 	r.HandleFunc("/", handlerDecorator(server.createIndexHandler)).Methods("POST")
 	r.HandleFunc("/{index}/", handlerDecorator(server.createDocumentHandler)).Methods("POST")
+	r.HandleFunc("/{index}/", handlerDecorator(server.deleteIndexHandler)).Methods("DELETE")
 	r.HandleFunc("/{index}/batch", handlerDecorator(server.createDocumentBatchHandler)).Methods("POST")
 	r.HandleFunc("/{index}/search", handlerDecorator(server.searchHandler)).Methods("GET")
 	r.HandleFunc("/{index}/compare", handlerDecorator(server.compareHandler)).Methods("GET")

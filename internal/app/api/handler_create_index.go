@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -38,13 +39,18 @@ func (s *Server) createIndexHandler(r *http.Request) response {
 	if _, ok := s.indexes[request.Name]; ok {
 		return errorResponseWithText("Index already exists", 400)
 	}
-	s.indexes[request.Name] = indexer.NewIndex(
-		&indexer.IndexConfig{
-			Language:     request.Config.Language,
-			CustomIDs:    request.Config.CustomIDs,
-			AutoUpdate:   request.Config.AutoUpdate,
-			UpdatePeriod: request.Config.UpdatePeriod.Duration,
-		},
-	)
+	ctx, cancel := context.WithCancel(s.ctx)
+	s.indexes[request.Name] = IndexInfo{
+		indexer.NewIndex(
+			ctx,
+			&indexer.IndexConfig{
+				Language:     request.Config.Language,
+				CustomIDs:    request.Config.CustomIDs,
+				AutoUpdate:   request.Config.AutoUpdate,
+				UpdatePeriod: request.Config.UpdatePeriod.Duration,
+			},
+		),
+		cancel,
+	}
 	return successResponse(responseData{Status: true, Payload: struct{ Message string }{"OK"}})
 }
