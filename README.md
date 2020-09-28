@@ -13,6 +13,8 @@ You can use any language, but engine uses snowball stemmer (https://github.com/k
  - Swedish (svenska),
  - Norwegian (norsk)
 
+Dummysearch calculates TF-IDF automatically in background every UpdatePeriod time.
+
 ## Contents
 - [Build and run](#build-and-run)
 - [Operations](#operations)
@@ -24,6 +26,8 @@ You can use any language, but engine uses snowball stemmer (https://github.com/k
     - [Delete document by id](#delete-document-by-id)
     - [Search documents](#search-documents-by-query)
     - [Compare two documents](#compare-two-documents)
+    - [Calcualte TFIDF](#calcualte-TFIDF)
+- [Index config](#index-config)
 
 
 ### Build and run:
@@ -52,13 +56,18 @@ $ docker run -p 6745:6745 -it -d dummysearch
 
 #### Creating new index:
 
+Creates index with specified config. See: [config](#index-config)
+
 ```shell script
 $ curl --location --request POST 'http://localhost:6745/' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "name": "lol",
     "config": {
-        "language": "english"
+        "language": "english",
+        "updatePeriod": "120s",
+        "autoUpdate": true,
+        "customIds": false
     }
 }'
 ```
@@ -99,7 +108,8 @@ curl --location --request POST 'http://localhost:6745/lol/' \
     "meta": {
         "someField": "any value",
         "otherField": 1
-    }
+    },
+    "id": 1
 }'
 ```
 Response:
@@ -108,7 +118,7 @@ Response:
   "status": true,
   "payload": {
     "Message": "OK",
-    "DocumentId": 0
+    "DocumentId": 1
   }
 }
 ```
@@ -152,6 +162,23 @@ Response:
       2,
       3
     ]
+  }
+}
+```
+
+#### Calculate TFIDF:
+
+```shell script
+curl --location --request GET 'http://localhost:6745/lol/update'
+```
+
+Response:
+
+```json
+{
+  "status": true,
+  "payload": {
+    "Message": "Index updating"
   }
 }
 ```
@@ -244,3 +271,10 @@ Response:
   }
 }
 ```
+
+#### Index config
+
+- Language - language for index. One index have only one language. If text in document contain other language words simply will not stemmed.
+- UpdatePeriod - duration for update TF-IDF values. For example if UpdatePeriod is "60s" and AutoUpdate enabled. Calculating will be started every 60 seconds, but process check that index has changes
+- AutoUpdate - Enable or disable AutoUpdate. If AutoUpdate disabled you must call [Calculate TF-IDF endpoint](#calculate-TFIDF)
+- CustomIds - add ability to specify custom ids for documents. If disabled documents will got autoincrement id.
