@@ -9,7 +9,7 @@ import (
 )
 
 type doc struct {
-	DocId int
+	DocId string
 	Meta  interface{}
 	Score float64
 }

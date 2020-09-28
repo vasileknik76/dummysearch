@@ -38,12 +38,12 @@ func CosineDistance(a map[int]float64, b map[int]float64) float64 {
 	return r / (vectorLen(a) * vectorLen(b))
 }
 
-func (s Searcher) Score(d1 int, d2 int) float64 {
+func (s Searcher) Score(d1 string, d2 string) float64 {
 
 	return CosineDistance(s.i.TFIDFGet(d1), s.i.TFIDFGet(d2))
 }
 
-func (s Searcher) Search(query string) (map[int]float64, error) {
+func (s Searcher) Search(query string) (map[string]float64, error) {
 
 	t := s.i.Tokenizer
 	tokens, err := t.Tokenize(query)
@@ -62,13 +62,13 @@ func (s Searcher) Search(query string) (map[int]float64, error) {
 
 	tfidf := s.i.TFIDFVal(wordIds)
 
-	res := make(map[int]float64)
+	res := make(map[string]float64)
 
 	if len(tfidf) == 0 {
 		return res, nil
 	}
 
-	s.i.DocsIter(func(docID int, doc *indexer.Document) {
+	s.i.DocsIter(func(docID string, doc *indexer.Document) {
 		score := CosineDistance(tfidf, s.i.TFIDFGet(docID))
 		if score == 0 || math.IsNaN(score) {
 			return

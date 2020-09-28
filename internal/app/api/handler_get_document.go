@@ -2,7 +2,6 @@ package api
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -10,9 +9,9 @@ import (
 func (s *Server) getDocumentHandler(r *http.Request) response {
 	vars := mux.Vars(r)
 	name := vars["index"]
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		return errorResponseWithText("id must be number", 400)
+	id := vars["id"]
+	if id == "" {
+		return errorResponseWithText("id must be not empty", 400)
 	}
 	if _, ok := s.indexes[name]; !ok {
 		return errorResponseWithText("index not exist", 404)

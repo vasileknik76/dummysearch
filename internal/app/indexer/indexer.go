@@ -19,6 +19,7 @@ type Index struct {
 
 	docsMu sync.RWMutex
 	Docs   map[int]*Document
+	docIds map[string]int
 	// key: DocId; value: Map: key: WordId; value: TFIDF
 	tFIDF   map[int]map[int]float64
 	tfidfMu sync.RWMutex
@@ -51,7 +52,9 @@ func NewIndex(ctx context.Context, config *IndexConfig) *Index {
 		tFIDF:     make(map[int]map[int]float64),
 		IDF:       make(map[int]float64),
 		Freq:      make(map[int]int),
+		docIds:    make(map[string]int),
 		ctx:       ctx,
+		LastDocId: 1,
 	}
 	if config.AutoUpdate {
 		go i.updateWorker()
@@ -78,12 +81,32 @@ func (i *Index) updateWorker() {
 	}
 }
 
-func (i *Index) newDocumentId() int {
+func (i *Index) newDocumentId(id string) int {
+	var docID int
+	var ok bool
+	i.docsMu.RLock()
+	docID, ok = i.docIds[id]
+	i.docsMu.RUnlock()
+	if ok {
+		return docID
+	}
+
 	i.lastDocIdMu.Lock()
-	defer i.lastDocIdMu.Unlock()
-	id := i.LastDocId
+	docID = i.LastDocId
 	i.LastDocId++
-	return id
+	i.lastDocIdMu.Unlock()
+
+	i.docsMu.Lock()
+	i.docIds[id] = docID
+	i.docsMu.Unlock()
+
+	return docID
+}
+
+func (i *Index) getInternalID(id string) int {
+	i.docsMu.RLock()
+	defer i.docsMu.RUnlock()
+	return i.docIds[id]
 }
 
 func (i *Index) addDocument(id int, doc *Document) {
@@ -93,15 +116,15 @@ func (i *Index) addDocument(id int, doc *Document) {
 	i.docsMu.Unlock()
 }
 
-func (i *Index) GetDocument(id int) *Document {
+func (i *Index) GetDocument(id string) *Document {
 	i.docsMu.RLock()
 	defer i.docsMu.RUnlock()
-	return i.Docs[id]
+	return i.Docs[i.getInternalID(id)]
 }
 
-func (i *Index) DeleteDocument(id int) {
+func (i *Index) DeleteDocument(id string) {
 	i.docsMu.Lock()
-	delete(i.Docs, id)
+	delete(i.Docs, i.getInternalID(id))
 	i.hasChanges = true
 	i.docsMu.Unlock()
 }
@@ -117,12 +140,9 @@ func (i *Index) TFIDFVal(wordIds []int) map[int]float64 {
 	return tfidf
 }
 
-func (i *Index) AddDocument(id int, text string, meta interface{}) int {
+func (i *Index) AddDocument(id string, text string, meta interface{}) string {
 	tokens, _ := i.Tokenizer.Tokenize(text)
-	docID := id
-	if !i.cfg.CustomIDs {
-		docID = i.newDocumentId()
-	}
+	docID := i.newDocumentId(id)
 	doc := &Document{len(tokens), make(map[int]float64), 0, meta}
 	wordsComplete := make(map[int]bool)
 	freq := make(map[int]int)
@@ -148,7 +168,7 @@ func (i *Index) AddDocument(id int, text string, meta interface{}) int {
 	}
 	i.addDocument(docID, doc)
 	// i.UpdateTFIDF()
-	return docID
+	return id
 }
 
 func (i *Index) updateIDF() {
@@ -197,30 +217,31 @@ func (i *Index) UpdateTFIDF() {
 	wg.Wait()
 }
 
-func (i *Index) TFIDFGet(docID int) map[int]float64 {
+func (i *Index) TFIDFGet(docID string) map[int]float64 {
 	i.tfidfMu.RLock()
 	defer i.tfidfMu.RUnlock()
 	cp := make(map[int]float64)
 
-	for k, v := range i.tFIDF[docID] {
+	for k, v := range i.tFIDF[i.getInternalID(docID)] {
 		cp[k] = v
 	}
 	return cp
 }
 
-func (i *Index) HasDoc(id int) bool {
+func (i *Index) HasDoc(id string) bool {
 	i.docsMu.RLock()
 	defer i.docsMu.RUnlock()
-	_, ok := i.Docs[id]
+	_, ok := i.Docs[i.getInternalID(id)]
 	return ok
 }
 
-func (i *Index) DocsIter(f func(docID int, d *Document)) {
+func (i *Index) DocsIter(f func(docID string, d *Document)) {
 	i.docsMu.RLock()
 	defer i.docsMu.RUnlock()
 
-	for docID, v := range i.Docs {
-		f(docID, v)
+	for docID, _ := range i.docIds {
+		iId := i.getInternalID(docID)
+		f(docID, i.Docs[iId])
 	}
 }
 

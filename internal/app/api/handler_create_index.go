@@ -19,7 +19,6 @@ func (s *Server) createIndexHandler(r *http.Request) response {
 	}
 	type _Cfg struct {
 		Language     text.Language `json:"language"`
-		CustomIDs    bool          `json:"customIds"`
 		UpdatePeriod Duration      `json:"updatePeriod"`
 		AutoUpdate   bool          `json:"autoUpdate"`
 	}
@@ -45,7 +44,6 @@ func (s *Server) createIndexHandler(r *http.Request) response {
 			ctx,
 			&indexer.IndexConfig{
 				Language:     request.Config.Language,
-				CustomIDs:    request.Config.CustomIDs,
 				AutoUpdate:   request.Config.AutoUpdate,
 				UpdatePeriod: request.Config.UpdatePeriod.Duration,
 			},

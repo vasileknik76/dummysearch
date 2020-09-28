@@ -109,7 +109,7 @@ curl --location --request POST 'http://localhost:6745/lol/' \
         "someField": "any value",
         "otherField": 1
     },
-    "id": 1
+    "id": "1"
 }'
 ```
 Response:
@@ -118,7 +118,7 @@ Response:
   "status": true,
   "payload": {
     "Message": "OK",
-    "DocumentId": 1
+    "DocumentId": "1"
   }
 }
 ```
@@ -133,19 +133,22 @@ curl --location --request POST 'http://localhost:6745/lol/batch' \
         "content": "some text!",
         "meta": {
             "foo": "bar"
-        }
+        },
+        "id": "1"
     },
     {
         "content": "london is the capital of great britain",
         "meta": {
             "bar": "baz"
-        }
+        },
+        "id": "2"
     },
     {
         "content": "any other, text.",
         "meta": {
             "foo": "bar2"
-        }
+        },
+        "id": "3"
     },
 ]'
 ```
@@ -158,9 +161,9 @@ Response:
   "payload": {
     "Message": "OK",
     "DocumentIds": [
-      1,
-      2,
-      3
+      "1",
+      "2",
+      "3"
     ]
   }
 }
@@ -237,14 +240,14 @@ Response:
   "status": true,
   "payload": [
     {
-      "DocId": 2,
+      "DocId": "2",
       "Meta": {
         "bar": "baz"
       },
       "Score": 0.26726124191242445
     },
     {
-      "DocId": 0,
+      "DocId": "0",
       "Meta": {
         "otherField": 1,
         "someField": "any value"
@@ -277,4 +280,3 @@ Response:
 - Language - language for index. One index have only one language. If text in document contain other language words simply will not stemmed.
 - UpdatePeriod - duration for update TF-IDF values. For example if UpdatePeriod is "60s" and AutoUpdate enabled. Calculating will be started every 60 seconds, but process check that index has changes
 - AutoUpdate - Enable or disable AutoUpdate. If AutoUpdate disabled you must call [Calculate TF-IDF endpoint](#calculate-tfidf)
-- CustomIds - add ability to specify custom ids for documents. If disabled documents will got autoincrement id.
