@@ -13,7 +13,30 @@ You can use any language, but engine uses snowball stemmer (https://github.com/k
  - Swedish (svenska),
  - Norwegian (norsk)
 
-### operations:
+## Contents
+- [Build and run](#build-and-run)
+- [Operations](#operations)
+    - [Creating new index](#creating-new-index)
+    - [Add document to index](#add-document-to-index)
+    - [Bulk add document to index](#bulk-add-document-to-index)
+    - [Get document by id](#get-document-by-id)
+    - [Delete document by id](#delete-document-by-id)
+    - [Search documents](#search-documents-by-query)
+    - [Compare two documents](#compare-two-documents)
+
+
+### Build and run:
+
+Build:
+```shell script
+$ go build -o build/dummysearch cmd/dummysearch/main.go
+```
+Run:
+```shell script
+$ ./build/dummysearch
+```
+
+### Operations:
 
 #### Creating new index:
 
