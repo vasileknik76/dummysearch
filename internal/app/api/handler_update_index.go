@@ -14,5 +14,7 @@ func (s *Server) updateIndexHandler(r *http.Request) response {
 	}
 	i := s.indexes[name].i
 	go i.UpdateTFIDF()
-	return successResponse(responseData{Status: true, Payload: struct{ Message string }{"Index updating"}})
+	return successResponse(responseData{Status: true, Payload: struct {
+		Message string `json:"message"`
+	}{"Index updating"}})
 }

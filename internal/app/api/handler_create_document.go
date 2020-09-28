@@ -36,8 +36,8 @@ func (s *Server) createDocumentHandler(r *http.Request) response {
 	return successResponse(responseData{
 		Status: true,
 		Payload: struct {
-			Message    string
-			DocumentId int
+			Message    string `json:"message"`
+			DocumentId int    `json:"documentId"`
 		}{"OK", id},
 	})
 }

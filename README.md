@@ -26,7 +26,7 @@ Dummysearch calculates TF-IDF automatically in background every UpdatePeriod tim
     - [Delete document by id](#delete-document-by-id)
     - [Search documents](#search-documents-by-query)
     - [Compare two documents](#compare-two-documents)
-    - [Calcualte TFIDF](#calcualte-TFIDF)
+    - [Calcualte TFIDF](#calcualte-tfidf)
 - [Index config](#index-config)
 
 
@@ -276,5 +276,5 @@ Response:
 
 - Language - language for index. One index have only one language. If text in document contain other language words simply will not stemmed.
 - UpdatePeriod - duration for update TF-IDF values. For example if UpdatePeriod is "60s" and AutoUpdate enabled. Calculating will be started every 60 seconds, but process check that index has changes
-- AutoUpdate - Enable or disable AutoUpdate. If AutoUpdate disabled you must call [Calculate TF-IDF endpoint](#calculate-TFIDF)
+- AutoUpdate - Enable or disable AutoUpdate. If AutoUpdate disabled you must call [Calculate TF-IDF endpoint](#calculate-tfidf)
 - CustomIds - add ability to specify custom ids for documents. If disabled documents will got autoincrement id.

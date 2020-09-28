@@ -52,5 +52,7 @@ func (s *Server) createIndexHandler(r *http.Request) response {
 		),
 		cancel,
 	}
-	return successResponse(responseData{Status: true, Payload: struct{ Message string }{"OK"}})
+	return successResponse(responseData{Status: true, Payload: struct {
+		Message string `json:"message"`
+	}{"OK"}})
 }

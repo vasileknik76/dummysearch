@@ -14,5 +14,7 @@ func (s *Server) deleteIndexHandler(r *http.Request) response {
 	}
 	s.indexes[name].destroy()
 	delete(s.indexes, name)
-	return successResponse(responseData{Status: true, Payload: struct{ Message string }{"OK"}})
+	return successResponse(responseData{Status: true, Payload: struct {
+		Message string `json:"message"`
+	}{"OK"}})
 }

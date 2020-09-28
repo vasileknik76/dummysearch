@@ -43,8 +43,8 @@ func (s *Server) createDocumentBatchHandler(r *http.Request) response {
 	return successResponse(responseData{
 		Status: true,
 		Payload: struct {
-			Message     string
-			DocumentIds []int
+			Message     string `json:"message"`
+			DocumentIds []int  `json:"documentIds"`
 		}{"OK", ids},
 	})
 }

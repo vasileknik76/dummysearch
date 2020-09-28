@@ -19,5 +19,7 @@ func (s *Server) deleteDocumentHandler(r *http.Request) response {
 	}
 	i := s.indexes[name].i
 	i.DeleteDocument(id)
-	return successResponse(responseData{Status: true, Payload: struct{ Message string }{"OK"}})
+	return successResponse(responseData{Status: true, Payload: struct {
+		Message string `json:"message"`
+	}{"OK"}})
 }
