@@ -36,6 +36,7 @@ func NewServer(config Config) *Server {
 	r.HandleFunc("/{index}/batch", handlerDecorator(server.createDocumentBatchHandler)).Methods("POST")
 	r.HandleFunc("/{index}/search", handlerDecorator(server.searchHandler)).Methods("GET")
 	r.HandleFunc("/{index}/compare", handlerDecorator(server.compareHandler)).Methods("GET")
+	r.HandleFunc("/{index}/update", handlerDecorator(server.updateIndexHandler)).Methods("GET")
 	r.HandleFunc("/{index}/{id}", handlerDecorator(server.deleteDocumentHandler)).Methods("DELETE")
 	r.HandleFunc("/{index}/{id}", handlerDecorator(server.getDocumentHandler)).Methods("GET")
 	r.NotFoundHandler = http.HandlerFunc(handlerDecorator(server.notFoundHandler))
