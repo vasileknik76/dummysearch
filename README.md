@@ -28,13 +28,24 @@ You can use any language, but engine uses snowball stemmer (https://github.com/k
 
 ### Build and run:
 
-Build:
+#### Build native:
 ```shell script
 $ go build -o build/dummysearch cmd/dummysearch/main.go
 ```
-Run:
+
+#### Build docker:
+```shell script
+$ docker build -t dummysearch .
+```
+
+#### Run native:
 ```shell script
 $ ./build/dummysearch
+```
+
+#### Run in docker:
+```shell script
+$ docker run -p 6745:6745 -it -d dummysearch
 ```
 
 ### Operations:

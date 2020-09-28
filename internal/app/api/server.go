@@ -10,7 +10,7 @@ import (
 )
 
 var DefaultConfig = Config{
-	Listen:       "127.0.0.1:6745",
+	Listen:       "0.0.0.0:6745",
 	WriteTimeout: 15 * time.Second,
 	ReadTimeout:  15 * time.Second,
 }
