@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"math"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -34,6 +35,10 @@ func (srv *Server) compareHandler(r *http.Request) response {
 	}
 
 	score := s.Score(doc1, doc2)
+
+	if math.IsNaN(score) {
+		score = 0
+	}
 
 	var payload = struct {
 		Score float64 `json:"score"`
